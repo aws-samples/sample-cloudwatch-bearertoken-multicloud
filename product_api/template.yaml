@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Product API - Multi-Cloud Serverless Observability
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.12
+    MemorySize: 512
+    Tags:
+      auto-delete: "no"
+      application: ecommerce
+
+Resources:
+  ServerlessRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Tags:
+        auto-delete: "no"
+        application: ecommerce
+
+  ProductApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: handler.lambda_handler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:LogsAPIKey-oenx-at-111122223333*"
+                - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:MetricsAPIKey-at-111122223333*"
+      Environment:
+        Variables:
+          CW_METRICS_SECRET_NAME: "MetricsAPIKey-at-111122223333"
+          CW_LOGS_SECRET_NAME: "LogsAPIKey-oenx-at-111122223333"
+          CW_REGION: !Ref AWS::Region
+          CW_LOG_GROUP: /multicloud/ecommerce
+          CW_LOG_STREAM: product-api
+          INVENTORY_SERVICE_URL: !Ref InventoryServiceUrl
+          PRICING_SERVICE_URL: !Ref PricingServiceUrl
+          CROSS_CLOUD_API_KEY: !Ref CrossCloudApiKey
+          DEPLOYMENT_ENV: production
+      Events:
+        GetProduct:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessRestApi
+            Path: /products/{product_id}
+            Method: get
+
+Parameters:
+  InventoryServiceUrl:
+    Type: String
+  PricingServiceUrl:
+    Type: String
+  CrossCloudApiKey:
+    Type: String
+    NoEcho: true
+
+Outputs:
+  ProductApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/products/"

@@ -1,0 +1,29 @@
+# Secrets / local env — never commit
+.env
+
+# Vendored / build artifacts
+.python_packages/
+package/
+build/
+dist/
+*.zip
+__pycache__/
+*.py[cod]
+.aws-sam/
+samconfig.toml
+
+# Rendered dashboard (generated from dashboard.json)
+dashboard.rendered.json
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Agent tooling / local settings
+.omni/
+.claude/
+.github/
+.cursor/
+.kiro/
+.agents/

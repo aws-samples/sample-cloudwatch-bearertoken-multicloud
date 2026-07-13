@@ -1,0 +1,428 @@
+{
+  "start": "-PT1H",
+  "periodOverride": "inherit",
+  "widgets": [
+    {
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "# Multi-Cloud Serverless Observability Dashboard"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 0,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "product",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum(rate({\"requests.total\", service_name=\"product-api\"}[5m]))",
+              "step": 60
+            },
+            {
+              "id": "inventory",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum(rate({\"requests.total\", service_name=\"inventory-service\"}[5m]))",
+              "step": 60
+            },
+            {
+              "id": "pricing",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum(rate({\"requests.total\", service_name=\"pricing-service\"}[5m]))",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": false, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Request Rate by Service",
+        "view": "line"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 8,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "product",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "avg({\"request.duration\", service_name=\"product-api\"})",
+              "step": 60
+            },
+            {
+              "id": "inventory",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "avg({\"request.duration\", service_name=\"inventory-service\"})",
+              "step": 60
+            },
+            {
+              "id": "pricing",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "avg({\"request.duration\", service_name=\"pricing-service\"})",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": false, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Average Latency by Service (ms)",
+        "view": "line"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 16,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "product",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum(rate({\"errors.total\", service_name=\"product-api\"}[5m]))",
+              "step": 60
+            },
+            {
+              "id": "inventory",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum(rate({\"errors.total\", service_name=\"inventory-service\"}[5m]))",
+              "step": 60
+            },
+            {
+              "id": "pricing",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum(rate({\"errors.total\", service_name=\"pricing-service\"}[5m]))",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": false, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Error Rate by Service",
+        "view": "line"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 7,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## Product API: Downstream Dependencies"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 0,
+      "y": 8,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "A",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum by (target_service, error_type) (rate({\"product_api.downstream_errors.total\"}[5m]))",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": false, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Downstream Errors by Service and Type",
+        "view": "line"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 12,
+      "y": 8,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "A",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "avg by (target_service) ({\"product_api.downstream.duration\"})",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": false, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Downstream Latency by Target Service (ms)",
+        "view": "line"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 14,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## Service Health: Error Breakdown"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 0,
+      "y": 15,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "A",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum by (error_type) (rate({\"errors.total\", service_name=\"product-api\"}[5m]))",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": true, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Product API Errors by Type",
+        "view": "line"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 8,
+      "y": 15,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "A",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum by (error_type) (rate({\"errors.total\", service_name=\"inventory-service\"}[5m]))",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": true, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Inventory Service Errors by Type",
+        "view": "line"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 16,
+      "y": 15,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "A",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum by (error_type) (rate({\"errors.total\", service_name=\"pricing-service\"}[5m]))",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": true, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Pricing Service Errors by Type",
+        "view": "line"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 21,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## Inventory Service: Database Health"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 0,
+      "y": 22,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "A",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "avg({\"inventory_service.db_query.duration\", service_name=\"inventory-service\"})",
+              "step": 60
+            },
+            {
+              "id": "B",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "max({\"inventory_service.db_query.duration\", service_name=\"inventory-service\"})",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": false, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "DB Query Latency (ms)",
+        "view": "line"
+      }
+    },
+    {
+      "type": "chart",
+      "x": 12,
+      "y": 22,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "data": {
+          "queries": [
+            {
+              "id": "A",
+              "type": "cloudwatch-metrics",
+              "language": "PromQL",
+              "query": "sum by (severity) ({\"inventory_service.low_stock_alerts\"})",
+              "step": 60
+            }
+          ]
+        },
+        "plotOptions": {
+          "legend": { "position": "bottom", "show": true },
+          "xAxis": { "type": "datetime" },
+          "yAxis": [{ "type": "linear" }],
+          "style": {
+            "lineOptions": { "filled": false, "pattern": "solid", "spline": false, "stacked": false, "width": 2 }
+          }
+        },
+        "region": "us-west-2",
+        "title": "Low Stock Alerts by Severity",
+        "view": "line"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 28,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## Cross-Cloud Logs"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 29,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "region": "us-west-2",
+        "title": "Recent Errors Across All Services",
+        "query": "SOURCE '/multicloud/ecommerce' | fields @timestamp, `resource.attributes.service.name` as service, `resource.attributes.cloud.provider` as cloud, body\n| filter body like /error|timeout|connection|failed/\n| sort @timestamp desc\n| limit 50",
+        "view": "table"
+      }
+    }
+  ]
+}
